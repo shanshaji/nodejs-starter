@@ -1,12 +1,12 @@
 const express = require('express');
 
-const loaders = require("./loaders");
+const loaders = require('./loaders');
 
-const logger = require("./loaders/logger");
+const logger = require('./loaders/logger');
 
 const startServer = async () => {
   const app = express();
-  const port = process.env.PORT
+  const port = process.env.PORT;
   // initialize loaders
   await loaders({ expressApp: app });
 
@@ -14,7 +14,7 @@ const startServer = async () => {
     .listen(port, () => {
       logger.info(`Server listening at http://localhost:${port}`);
     })
-    .on("error", (err) => {
+    .on('error', (err) => {
       logger.error(err.message);
 
       process.exit(1);

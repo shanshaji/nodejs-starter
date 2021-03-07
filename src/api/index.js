@@ -3,11 +3,11 @@ const user = require('./routes/user.js');
 const task = require('./routes/task.js');
 
 const routes = () => {
-    const app = Router();
-    user(app);
-    task(app);
+  const app = Router();
+  user(app);
+  task(app);
 
-	return app
-}
+  return app;
+};
 
-module.exports = routes
+module.exports = routes;

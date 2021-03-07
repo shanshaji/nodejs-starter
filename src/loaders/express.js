@@ -2,8 +2,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const routes = require('../api/index');
 
-module.exports = ( app ) => {
-
+module.exports = (app) => {
   app.get('/status', (req, res) => {
     res.status(200).end();
   });
@@ -36,10 +35,7 @@ module.exports = ( app ) => {
   /// error handlers
   app.use((err, req, res, next) => {
     if (err['status'] === '401') {
-      return res
-        .status(err.status)
-        .send({ message: err.message })
-        .end();
+      return res.status(err.status).send({ message: err.message }).end();
     }
     return next(err);
   });
