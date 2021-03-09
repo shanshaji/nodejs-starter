@@ -2,8 +2,6 @@ const { Router } = require('express');
 const router = Router();
 const User = require('../../models/user');
 const middlewares = require('../middleware');
-const multer = require('multer');
-const sharp = require('sharp');
 const { sendWelcomeEmail, sendCancellationEmail } = require('../../services/email');
 
 module.exports = (app) => {
@@ -73,9 +71,6 @@ module.exports = (app) => {
 
       await user.save();
 
-      // cant use because schema wont work
-      // const user = await User.findByIdAndUpdate(_id, req.body, {new: true, runValidators: true })
-
       if (!user) {
         return res.status(404).send();
       }
@@ -92,59 +87,6 @@ module.exports = (app) => {
       res.send(req.user);
     } catch (e) {
       res.status(500).send();
-    }
-  });
-
-  const upload = multer({
-    limits: {
-      fileSize: 10000000,
-    },
-    fileFilter(req, file, cb) {
-      if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-        cb(new Error('File Must be image'));
-      }
-      cb(undefined, true);
-      // cb(new Error('File Must be PDF')) // throw error
-      // cb(undefined, true) //accept the file
-      // cb(undefined, false) //reject the file
-    },
-  });
-  router.post(
-    '/me/avatar',
-    middlewares.isAuth,
-    middlewares.attachCurrentUser,
-    upload.single('avatar'),
-    async (req, res) => {
-      const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer();
-      req.user.avatar = buffer;
-      await req.user.save();
-      res.send('Avatar uploaded');
-    },
-    (error, req, res, next) => {
-      res.status(400).send({ error: error.message });
-    }
-  );
-
-  router.delete('/me/avatar', middlewares.isAuth, middlewares.attachCurrentUser, async (req, res) => {
-    try {
-      req.user.avatar = undefined;
-      await req.user.save();
-      res.send('avatar deleted');
-    } catch (e) {
-      res.status(500).send();
-    }
-  });
-
-  router.get('/:id/avatar', async (req, res) => {
-    try {
-      const user = await User.findById(req.params.id);
-      if (!user || !user.avatar) {
-        throw new Error();
-      }
-      res.set('Content-type', 'image/png');
-      res.send(user.avatar);
-    } catch (e) {
-      res.status(404).send;
     }
   });
 };
