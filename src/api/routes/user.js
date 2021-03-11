@@ -3,6 +3,7 @@ const router = Router();
 const User = require('../../models/user');
 const middlewares = require('../middleware');
 const { sendWelcomeEmail, sendCancellationEmail } = require('../../services/email');
+const { signUp, deleteUser } = require('../../services/user')
 
 module.exports = (app) => {
   app.use('/users', router);
@@ -11,16 +12,12 @@ module.exports = (app) => {
     res.send(req.user);
   });
 
-  router.post('/', async (req, res) => {
-    const user = new User(req.body);
-
-    try {
-      await user.save();
-      sendWelcomeEmail(user.email, user.name);
-      const token = await user.generateAuthToken();
+  router.post('/', async (req, res, next) => {
+    try{
+      const {user, token} = await signUp(req.body, next)
       res.status(201).send({ user, token });
-    } catch (e) {
-      res.status(400).send(e);
+    }catch(e){
+      next(e)
     }
   });
 
@@ -81,12 +78,11 @@ module.exports = (app) => {
   });
 
   router.delete('/me', middlewares.isAuth, middlewares.attachCurrentUser, async (req, res) => {
-    try {
-      await req.user.remove();
-      sendCancellationEmail(req.user.email, req.user.name);
+    try{
+     await deleteUser(req.user)
       res.send(req.user);
-    } catch (e) {
-      res.status(500).send();
+    }catch(e){
+      next(e)
     }
   });
 };
