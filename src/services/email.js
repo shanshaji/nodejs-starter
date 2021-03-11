@@ -1,4 +1,5 @@
 const sgMail = require('@sendgrid/mail');
+const logger = require('../loaders/logger');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
@@ -23,12 +24,12 @@ const sendCancellationEmail = (email, name) => {
 };
 
 const sendEmail = async (content) => {
-  try{
+  try {
     await sgMail.send(content);
-  }catch(e){
-    console.log(`Error sending Email ${e.message}`)
+  } catch (e) {
+    logger.error(`Error sending Email ${e.message}`);
   }
-}
+};
 
 module.exports = {
   sendWelcomeEmail,
