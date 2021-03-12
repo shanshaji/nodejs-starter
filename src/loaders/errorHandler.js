@@ -1,4 +1,8 @@
 const logger = require('../loaders/logger');
+
+// const errCodeHandlerMap = {
+// 	404: handleNotFoundError()
+// }
 module.exports = (err, req, res, next) => {
   try {
     if (err['status'] === 404) return (err = handleNotFoundError(err, res, req));

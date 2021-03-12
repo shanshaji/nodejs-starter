@@ -1,13 +1,22 @@
 const request = require('supertest');
-const app = require('../src/app');
 const Task = require('../src/models/task');
 const { userOne, userTwo, taskOne, setupDatabase } = require('./fixtures/db');
+const express = require('express');
+const loaders = require('../src/loaders');
+
+const app = express();
+
+beforeAll(async (done) => {
+  await loaders({ expressApp: app });
+  done()
+})
+
 
 beforeEach(setupDatabase);
 
 test('Should create task for user', async () => {
   const response = await request(app)
-    .post('/tasks')
+    .post('/api/tasks')
     .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
     .send({
       description: 'From My tests',
@@ -21,7 +30,7 @@ test('Should create task for user', async () => {
 
 test('Should fetch tasks for user', async () => {
   const response = await request(app)
-    .get('/tasks')
+    .get('/api/tasks')
     .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
     .send()
     .expect(200);
@@ -30,7 +39,7 @@ test('Should fetch tasks for user', async () => {
 
 test('Should NOT Delete tasks of another user', async () => {
   await request(app)
-    .delete(`/tasks/${taskOne._id}`)
+    .delete(`/api/tasks/${taskOne._id}`)
     .set('Authorization', `Bearer ${userTwo.tokens[0].token}`)
     .send()
     .expect(404);

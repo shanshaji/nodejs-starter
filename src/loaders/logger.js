@@ -1,7 +1,7 @@
 const winston = require('winston');
 
 const logger = winston.createLogger({
-  transports: [new winston.transports.File({ filename: '../logs/app.log' })],
+  transports: [new winston.transports.File({ filename: './logs/app.log' })],
 });
 
 // enable console logs in non production env

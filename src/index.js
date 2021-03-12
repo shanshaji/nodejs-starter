@@ -22,3 +22,6 @@
 
 //     process.exit(1);
 //   });
+
+const { startServer } = require("./app");
+startServer();
